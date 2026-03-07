@@ -15,22 +15,22 @@ import { loadExistingAnalysis, uploadImageAndAnalyze } from '../state/analysisTh
 
 const buildSignals = (result) => {
   if (!result || !result.signals) return [
-    { label: 'Neural Pattern Match', value: 0, warning: false },
+    { label: 'Local AI Model', value: 0, warning: false },
+    { label: 'AI Model Cross-Verification', value: 0, warning: false },
     { label: 'Error Level Analysis (ELA)', value: 0, warning: false },
     { label: 'Metadata Integrity', value: 20, warning: true },
     { label: 'Compression Consistency', value: 45, warning: true },
     { label: 'Noise Distribution', value: 35, warning: true },
-    { label: 'Hive AI Detection', value: 0, warning: false },
   ];
-  
+
   const s = result.signals;
   return [
-    { label: 'Neural Pattern Match', value: s.aiProbability || 0, warning: (s.aiProbability || 0) > 60 },
-    { label: 'Error Level Analysis (ELA)', value: s.elaScore || 0, warning: (s.elaScore || 0) > 30 },
-    { label: 'Metadata Integrity', value: s.metadataIntegrity || 0, warning: (s.metadataIntegrity || 0) < 50 },
-    { label: 'Compression Consistency', value: s.compressionConsistency || 0, warning: (s.compressionConsistency || 0) < 50 },
-    { label: 'Noise Distribution', value: s.noiseScore || 0, warning: (s.noiseScore || 0) < 50 },
-    { label: 'Hive AI Detection', value: s.hiveAiProbability || 0, warning: (s.hiveAiProbability || 0) > 50 },
+    { label: 'Local AI Model',            value: s.localModel1  ?? s.localModel ?? s.aiProbability ?? 0, warning: (s.localModel1 ?? s.localModel ?? s.aiProbability ?? 0) > 60 },
+    { label: 'AI Model Cross-Verification', value: s.localModel2 ?? 0, warning: (s.localModel2 ?? 0) > 60 },
+    { label: 'Error Level Analysis (ELA)', value: s.elaScore     || 0, warning: (s.elaScore || 0) > 30 },
+    { label: 'Metadata Integrity',         value: s.metadataIntegrity    || 0, warning: (s.metadataIntegrity    || 0) < 50 },
+    { label: 'Compression Consistency',    value: s.compressionConsistency || 0, warning: (s.compressionConsistency || 0) < 50 },
+    { label: 'Noise Distribution',         value: s.noiseScore  || 0, warning: (s.noiseScore  || 0) < 50 },
   ];
 }
 
@@ -408,7 +408,9 @@ export default function AnalysisPage() {
                                 {Object.entries(result.metadata || {}).map(([key, val]) => (
                                   <div key={key} className="p-3 bg-card rounded-xl border border-border/50 flex flex-col justify-center">
                                     <p className="text-[10px] text-muted-foreground font-semibold uppercase mb-1 truncate">{key}</p>
-                                    <p className="text-xs font-medium text-foreground line-clamp-2">{val}</p>
+                                    <p className="text-xs font-medium text-foreground line-clamp-2">
+                                      {typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val)}
+                                    </p>
                                   </div>
                                 ))}
                             </div>

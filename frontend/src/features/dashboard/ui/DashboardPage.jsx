@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/app/providers/AuthContext'
@@ -5,10 +6,11 @@ import Navbar from '@/shared/components/Navbar'
 import { Button } from '@/shared/components/ui/button'
 import {
   Upload, History, Settings, Shield, Activity, TrendingUp,
-  Clock, ChevronRight, Brain, Search, Layers, AlertTriangle, CheckCircle2, Image
+  Clock, ChevronRight, Brain, Search, Layers, AlertTriangle, CheckCircle2, Image, Loader2
 } from 'lucide-react'
-
-import { useDashboardData } from '../hooks/useDashboardData'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { resetDashboard } from '../state/dashboardSlice'
+import { fetchDashboardData } from '../state/dashboardThunks'
 
 // Status mapping for real backend verdicts
 const STATUS_CONFIG = {
@@ -53,15 +55,33 @@ const ITEM = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transiti
 
 export default function DashboardPage() {
   const { user } = useAuth()
-  const { recentAnalyses, isLoading } = useDashboardData()
+  const dispatch = useAppDispatch()
+
+  // Pull from Redux — never Zustand — so state resets are instant across the app
+  const { recentAnalyses, isLoading, ownerUid } = useAppSelector(state => state.dashboard)
+
+  // KEY SESSION ISOLATION: any time the logged-in user changes, wipe old data
+  // and fetch fresh data that belongs to the new user.
+  useEffect(() => {
+    if (!user?.uid) return
+    // If cached data belongs to a DIFFERENT user, clear it first
+    if (ownerUid && ownerUid !== user.uid) {
+      dispatch(resetDashboard())
+    }
+    dispatch(fetchDashboardData(user.uid))
+  }, [user?.uid]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Prevent rendering stale cross-user data during transitions
+  const safeAnalyses = ownerUid === user?.uid ? recentAnalyses : []
+  const showLoading = isLoading || (user?.uid && ownerUid !== user?.uid)
   
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
   // Calculate real stats from fetched data
-  const authenticCount = recentAnalyses.filter(a => a.verdict === 'Authentic').length;
-  const manipulatedCount = recentAnalyses.filter(a => a.verdict === 'Likely Manipulated' || a.verdict === 'Possibly Edited').length;
-  const aiCount = recentAnalyses.filter(a => a.verdict === 'AI Generated').length;
+  const authenticCount = safeAnalyses.filter(a => a.verdict === 'Authentic').length;
+  const manipulatedCount = safeAnalyses.filter(a => a.verdict === 'Likely Manipulated' || a.verdict === 'Possibly Edited').length;
+  const aiCount = safeAnalyses.filter(a => a.verdict === 'AI Generated').length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -97,7 +117,7 @@ export default function DashboardPage() {
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
           >
             {[
-              { label: 'Total Scans', value: user?.analysisCount || recentAnalyses.length, icon: Search, color: 'text-primary', glow: 'shadow-[0_0_30px_-10px_hsla(var(--primary),0.3)]' },
+              { label: 'Total Scans', value: user?.analysisCount || safeAnalyses.length, icon: Search, color: 'text-primary', glow: 'shadow-[0_0_30px_-10px_hsla(var(--primary),0.3)]' },
               { label: 'Authentic', value: authenticCount, icon: CheckCircle2, color: 'text-emerald-500 dark:text-emerald-400', glow: 'shadow-[0_0_30px_-10px_rgba(16,185,129,0.2)]' },
               { label: 'Manipulated', value: manipulatedCount, icon: AlertTriangle, color: 'text-amber-500 dark:text-amber-400', glow: 'shadow-[0_0_30px_-10px_rgba(245,158,11,0.2)]' },
               { label: 'AI Generated', value: aiCount, icon: Brain, color: 'text-destructive', glow: 'shadow-[0_0_30px_-10px_rgba(239,68,68,0.2)]' },
@@ -136,11 +156,13 @@ export default function DashboardPage() {
               </div>
 
               <div className="divide-y divide-border">
-                {isLoading ? (
-                  <div className="p-8 text-center text-muted-foreground text-sm font-bold uppercase tracking-widest">Loading recent analyses...</div>
-                ) : recentAnalyses.length === 0 ? (
+                {showLoading ? (
+                  <div className="p-8 text-center text-muted-foreground text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-3">
+                    <Loader2 className="size-4 animate-spin" /> Loading analyses...
+                  </div>
+                ) : safeAnalyses.length === 0 ? (
                   <div className="p-8 text-center text-muted-foreground text-sm font-bold uppercase tracking-widest">No analyses yet. Start exploring!</div>
-                ) : recentAnalyses.map((item) => {
+                ) : safeAnalyses.map((item) => {
                   const statusKey = item.status === 'pending' ? 'pending' : item.status === 'analysis_failed' ? 'analysis_failed' : item.verdict;
                   const cfg = STATUS_CONFIG[statusKey] || STATUS_FALLBACK;
                   const StatusIcon = cfg.icon;

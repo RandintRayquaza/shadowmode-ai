@@ -9,6 +9,7 @@ export async function saveAnalysis(data) {
     ...data,
     timestamp: FieldValue.serverTimestamp(),
   });
+  console.log(`[Firestore] Saved analysis ${ref.id} for user ${data.userId}`);
   return ref.id;
 }
 
@@ -20,19 +21,39 @@ export async function updateAnalysis(id, data) {
   });
 }
 
-export async function getHistory(limit = 20) {
+/**
+ * Get analysis history scoped strictly to the given userId.
+ * Never returns results from other users.
+ */
+export async function getHistory(userId, limit = 20) {
+  if (!userId) throw new Error("getHistory: userId is required");
   const db = getDb();
+  console.log(`[Firestore] getHistory — userId: ${userId}, limit: ${limit}`);
   const snap = await db
     .collection(COLLECTION)
+    .where("userId", "==", userId)
     .orderBy("timestamp", "desc")
     .limit(limit)
     .get();
   return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }
 
-export async function getResultById(id) {
+/**
+ * Get a single analysis result by ID, verifying ownership.
+ * Returns null if not found OR if the record belongs to a different user.
+ */
+export async function getResultById(id, userId) {
   const db = getDb();
   const doc = await db.collection(COLLECTION).doc(id).get();
   if (!doc.exists) return null;
-  return { id: doc.id, ...doc.data() };
+
+  const data = { id: doc.id, ...doc.data() };
+
+  // Ownership check — never expose another user's record
+  if (userId && data.userId && data.userId !== userId) {
+    console.warn(`[Firestore] Ownership mismatch! Record ${id} belongs to ${data.userId}, requester is ${userId}`);
+    return "forbidden";
+  }
+
+  return data;
 }

@@ -22,6 +22,9 @@ export async function analyze(req, res, next) {
 
     const { buffer: imageBuffer, originalname } = req.file;
     const baseName = `${uuidv4()}-${originalname.replace(/\s+/g, "_")}`;
+    const userId = req.user?.uid || null;
+
+    console.log(`[analyze] User ${userId} uploading: ${originalname}`);
 
     let originalUpload = { url: null, fileId: null, thumbnailUrl: null };
     try {
@@ -31,6 +34,7 @@ export async function analyze(req, res, next) {
     }
 
     const docId = await saveAnalysis({
+      userId,                          // ← scoped to the requesting user
       imageUrl: originalUpload.url,
       imageFileId: originalUpload.fileId,
       thumbnailUrl: originalUpload.thumbnailUrl,

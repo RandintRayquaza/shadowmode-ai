@@ -1,6 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { analyze } from "../controllers/analyzeController.js";
+import { requireAuth } from "../middleware/authMiddleware.js";
 
 const router = Router();
 const MAX_SIZE = (parseInt(process.env.MAX_FILE_SIZE_MB || "10", 10)) * 1024 * 1024;
@@ -14,7 +15,7 @@ const upload = multer({
   },
 });
 
-router.post("/", (req, res, next) => {
+router.post("/", requireAuth, (req, res, next) => {
   upload.single("image")(req, res, (err) => {
     if (!err) return next();
     const msg = {

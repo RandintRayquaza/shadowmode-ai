@@ -2,6 +2,23 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../state/useAuthStore";
 import { authApi } from "../api/authApi";
 import { toast } from "sonner";
+import { store } from "@/store/store";
+import { resetAnalysis } from "@/features/ai-analysis/state/analysisSlice";
+import { resetDashboard } from "@/features/dashboard/state/dashboardSlice";
+import { fetchDashboardData } from "@/features/dashboard/state/dashboardThunks";
+
+// Keys to scrub from local/session storage on logout
+const SESSION_KEYS = ["analysisData", "authUser", "analysisHistory"];
+
+function clearAllSessionData() {
+  SESSION_KEYS.forEach((key) => {
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  });
+  // Clear Redux slices
+  store.dispatch(resetAnalysis());
+  store.dispatch(resetDashboard());
+}
 
 export const useAuthActions = () => {
   const navigate = useNavigate();
@@ -14,7 +31,7 @@ export const useAuthActions = () => {
       toast.error(response.error);
       return false;
     }
-    
+
     clearError();
     if (successMessage) toast.success(successMessage);
     if (redirectPath) navigate(redirectPath);
@@ -23,18 +40,22 @@ export const useAuthActions = () => {
 
   const login = async (email, password) => {
     setLoading(true);
+    // Clear any previous user's data before logging in a new one
+    clearAllSessionData();
     const res = await authApi.loginWithEmail(email, password);
     return handleAuthResponse(res, "Welcome back!", "/dashboard");
   };
 
   const signup = async (email, password) => {
     setLoading(true);
+    clearAllSessionData();
     const res = await authApi.signupWithEmail(email, password);
     return handleAuthResponse(res, "Account created successfully.", "/dashboard");
   };
 
   const loginWithGoogle = async () => {
     setLoading(true);
+    clearAllSessionData();
     const res = await authApi.loginWithGoogle();
     return handleAuthResponse(res, "Signed in with Google.", "/dashboard");
   };
@@ -63,6 +84,7 @@ export const useAuthActions = () => {
 
   const verifyOtp = async (otp) => {
     setLoading(true);
+    clearAllSessionData();
     const res = await authApi.verifyPhoneOtp(otp);
     return handleAuthResponse(res, "Phone verified successfully.", "/dashboard");
   };
@@ -72,6 +94,8 @@ export const useAuthActions = () => {
     const res = await authApi.logout();
     setLoading(false);
     if (res.success) {
+      // Clear ALL user data from Redux and storage before navigating
+      clearAllSessionData();
       toast.success("Logged out.");
       navigate("/");
       return true;

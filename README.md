@@ -2,73 +2,103 @@
 
 ShadowMode is a state-of-the-art AI-powered forensic image analysis dashboard designed to detect deepfakes, AI-generated content, and digital manipulations.
 
-## 🚀 Recent Developments & Fixes
+## 🚀 Overview
 
-We have undergone a massive overhaul to stabilize the AI pipeline and refine the user experience. Below are the key improvements implemented:
+ShadowMode provides high-fidelity results across multiple detection signals, enabling investigators to verify image authenticity with confidence. The platform combines advanced computer vision models with statistical analysis to reveal hidden synthetic patterns and pixel-level inconsistencies.
 
-### 1. Robust AI Analysis Pipeline
+## 🏗️ System Architecture
 
-We have fully wired the analytical pipeline to provide high-fidelity results across six key detection signals:
+ShadowMode consists of three core components:
 
-- **Neural Pattern Match:** Uses a local HuggingFace Swin Transformer model (`umm-maybe/AI-image-detector`) to detect synthetic textures. _Fixed a critical architecture mismatch where the model was incorrectly loading into a ViT class._
-- **Hive AI Integration:** Seamless integration with The Hive AI API for world-class deepfake and synthetic detection.
-- **Error Level Analysis (ELA):** Identifies differences in JPEG compression levels to reveal pixel-level inconsistencies.
-- **Metadata Integrity:** Deep EXIF forensic scan to check for camera signatures and software processing traces (Photoshop, GIMP, etc.).
-- **Compression Consistency & Noise Distribution:** Heuristic analysis of image artifacts and noise patterns.
-
-### 2. UI/UX & Visibility Improvements
-
-- **Semantic Theming:** Replaced hardcoded color values with Tailwind CSS semantic variables (`text-foreground`, `bg-card`, etc.). The dashboard now scales perfectly between Light and Dark modes with full element visibility.
-- **Real-time Feedback:** The analysis page now displays real percentages and a cumulative **Risk Score** instead of placeholder values.
-- **Forensic Gauge:** Implemented a dynamic SVG gauge that animates the Trust/Risk score based on the scan results.
-
-### 3. Core Reliability & System Fixes
-
-- **Local File Serving:** Replaced the unstable ImageKit integration with a robust local file serving mechanism. Images are now stored in `backend/public/uploads` and served directly, eliminating 404 errors.
-- **Crash Prevention:** Added optional chaining to user data rendering in `SettingsPage.jsx` to prevent "TypeError: charAt of undefined" during initial loads.
-- **Process Management:** Resolved multiple `EADDRINUSE` port conflicts by implementing a robust cleanup strategy for orphaned Node and Python processes.
+1.  **Frontend (React + Vite)**: A cinematic, high-end dashboard built with React, Redux Toolkit, Framer Motion, and GSAP. It handles user interactions, image uploads, and visualizes complex analysis results.
+2.  **Backend API (Node.js + Express)**: Orchestrates authentication via Firebase and persists analysis history in Firestore. It acts as a secure bridge between the frontend and the AI microservice.
+3.  **AI Analysis Service (Flask)**: A Python-based microservice that runs the heavy computational models. It performs ensemble AI detection, Error Level Analysis (ELA), and metadata extraction.
 
 ---
 
-## 🛠️ Architecture
+## 🧠 AI Analysis Pipeline
 
-The project follows a 4-layer React architecture and a microservices-based backend:
+ShadowMode uses a multi-layered verification strategy:
 
-- **Frontend:** React + Vite + Tailwind CSS + Framer Motion.
-- **Backend API:** Node.js + Express (Port 3001) + Firestore Database.
-- **AI Microservice:** Python Flask (Port 5001) + PyTorch + Transformers + OpenCV.
-- **External API:** Hive AI Detection.
+### 1. Ensemble AI Detection
 
-## 🚦 Getting Started
+We employ two independent local HuggingFace transformers to cross-verify synthetic patterns:
 
-### 1. Requirements
+- **Model 1 (`umm-maybe/AI-image-detector`)**: Optimized for synthetic texture detection.
+- **Model 2 (`prithivMLmods/AI-Image-Detector`)**: Provides a second independent validation layer.
+- **Ensemble Score**: The final AI probability is an ensemble of both models, ensuring high reliability even if one model is less confident.
 
-- Node.js v18+
-- Python 3.10+
-- Hive AI API Key (stored in `backend/.env`)
+### 2. Error Level Analysis (ELA)
 
-### 2. Installation
+Identifies differences in JPEG compression levels. Significant variations in ELA help reveal where an image has been modified by showing high-contrast "noise" in specific areas.
+
+### 3. Metadata Integrity
+
+Examines the EXIF data stored within the image. It looks for missing camera headers, timestamps, or software fingerprints (like Adobe Photoshop) to assess the likelihood of tampering.
+
+### 4. Heuristic Scoring
+
+An integrated logic engine assesses the combined output of all signals to calculate a final **Authenticity Score** (0-100) and provides a clear verdict (Authentic, Possibly Edited, Likely Manipulated, or AI Generated).
+
+---
+
+## ⚙️ Tech Stack
+
+### Frontend
+
+- **Framework**: React (Vite)
+- **State Management**: Redux Toolkit (RTK)
+- **Animations**: Framer Motion & GSAP
+- **Styling**: Vanilla CSS & TailwindCSS
+- **Authentication**: Firebase SDK
+
+### Backend
+
+- **Platform**: Node.js (Express)
+- **Database**: Google Firestore
+- **Auth**: Firebase Admin SDK
+- **Storage**: Multer (In-memory)
+
+### AI Microservice
+
+- **Platform**: Python (Flask)
+- **Deep Learning**: PyTorch & Transformers (HuggingFace)
+- **Image Processing**: Pillow & NumPy
+
+---
+
+## 🛠️ Setup & Installation
+
+### 1. AI Analysis Service
 
 ```bash
-# Install Node dependencies
-cd backend && npm install
-cd ../frontend && npm install
-
-# Install Python dependencies
-cd ../ai-service
+cd ai-service
 pip install -r requirements.txt
+py app.py
 ```
 
-### 3. Running the App
+_Note: On the first run, it will download the HuggingFace model weights (~1GB each)._
 
-Open three terminals:
+### 2. Backend API
 
-1. **Frontend:** `cd frontend && npm run dev`
-2. **Backend:** `cd backend && npm run dev`
-3. **AI Service:** `cd ai-service && py app.py`
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+_Ensure you have a `.env` file with Firebase Admin SDK credentials._
+
+### 3. Frontend Dashboard
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ---
 
-## 👤 Credits
+## 🔒 Security & Data Isolation
 
-Developed for a high-performance production-ready hackathon environment.
+ShadowMode uses strict session-based data isolation. Every API request is protected by Firebase ID Token validation. The Redux store is completely reset on logout, ensuring that switching accounts never leaks history or analysis results between users.
