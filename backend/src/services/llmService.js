@@ -16,10 +16,10 @@ function buildPrompt({ score, verdict, aiProbability, flags, metadata }) {
       ].filter(Boolean).join(", ")
     : "No metadata available";
 
-  return `You are a forensic image analysis expert. Write a concise 2-3 sentence plain-English explanation of whether this image appears authentic or manipulated. Be direct and non-technical.
+  return `You are a forensic image analysis expert. Write a concise 2-3 sentence plain-English explanation of whether this image appears authentic or AI-generated. Be direct and non-technical. Base your conclusion primarily on the Neural AI Score.
 
-Authenticity Score: ${score}/100 (${verdict})
-AI Generation Probability: ${(aiProbability * 100).toFixed(1)}%
+Verdict: ${verdict}
+Neural AI Score: ${(aiProbability * 100).toFixed(1)}% (primary signal)
 Image Metadata: ${metaSummary}
 Detected Issues:
 ${flagsSummary}
@@ -41,11 +41,16 @@ async function callHiveAI(prompt) {
   throw new Error("Unexpected Hive AI response");
 }
 
-function fallbackExplanation({ score, verdict, aiProbability, flags }) {
-  if (score >= 80) return "This image shows no significant signs of manipulation or AI generation. The metadata and pixel-level analysis appear consistent with an authentic photograph.";
-  if (aiProbability > 0.7) return `This image has a ${(aiProbability * 100).toFixed(0)}% probability of being AI-generated based on visual pattern analysis.`;
-  if (flags.length > 0) return `The image shows signs of potential editing. The primary concern is: ${flags[0].description}. Authenticity score: ${score}/100.`;
-  return `Analysis returned an authenticity score of ${score}/100 (${verdict}). Some anomalies suggest this image may not be entirely original.`;
+function fallbackExplanation({ verdict, score }) {
+  const riskDisplay = score != null ? Math.round(score) : '?';
+  if (verdict === 'Authentic Photo') {
+    return `Risk analysis score: ${riskDisplay}/100. The neural detector found no strong synthetic patterns and forensic signals are consistent with an authentic photograph.`;
+  }
+  if (verdict === 'Possibly Edited') {
+    return `Risk analysis score: ${riskDisplay}/100. Some synthetic patterns were detected but the evidence is not conclusive. The image may have been processed or lightly edited.`;
+  }
+  // Likely AI Generated
+  return `Risk analysis score: ${riskDisplay}/100. The combined forensic and neural analysis strongly indicates AI-generated visual patterns.`;
 }
 
 export async function generateExplanation(analysisData) {

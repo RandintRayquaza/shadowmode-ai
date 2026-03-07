@@ -32,10 +32,17 @@ export async function getHistory(userId, limit = 20) {
   const snap = await db
     .collection(COLLECTION)
     .where("userId", "==", userId)
-    .orderBy("timestamp", "desc")
     .limit(limit)
     .get();
-  return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+  const history = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  
+  // In-memory sort to avoid requiring a composite index for (userId, timestamp)
+  return history.sort((a, b) => {
+    const tA = a.timestamp?.seconds || 0;
+    const tB = b.timestamp?.seconds || 0;
+    return tB - tA;
+  });
 }
 
 /**

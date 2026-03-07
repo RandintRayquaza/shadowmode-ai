@@ -10,11 +10,11 @@ gsap.registerPlugin(ScrollTrigger)
 const TECH_LAYERS = [
   {
     layer: '01',
-    title: 'Hive AI Integration',
-    tag: 'Image Analysis',
-    description: 'Direct integration with the Hive AI enterprise engine to detect patterns unique to major AI generation models. We provide analytical insights into neural artifacts without exaggerating detection accuracy.',
+    title: 'Neural Ensemble',
+    tag: 'AI Verification',
+    description: 'A dual-model local processing sequence combining umm-maybe and Deep-Fake-Detector-v2. Our system parses probabilistic artifacts from different neural architectures to ensure high-confidence cross-verification.',
     icon: Network,
-    details: ['Generative Marker Detection', 'Model Pattern Matching']
+    details: ['Model Cross-Verification', 'Synthetic Pattern Detection']
   },
   {
     layer: '02',
@@ -116,7 +116,7 @@ export default function TechnologySection() {
         {/* Technical Capabilities Grid */}
         <div className="mt-60 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-foreground/5 border border-foreground/5 rounded-4xl overflow-hidden shadow-2-xl">
           {[
-            { icon: Network, label: 'Hive AI', sub: 'Generative Detection' },
+            { icon: Network, label: 'Model Ensemble', sub: 'Neural Verification' },
             { icon: GitBranch, label: 'Metadata', sub: 'EXIF/IPTC Validation' },
             { icon: Database, label: 'Firebase', sub: 'Secure Persistence' },
             { icon: Code2, label: 'ImageKit', sub: 'Low-Loss Storage' },

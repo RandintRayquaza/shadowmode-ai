@@ -2,25 +2,25 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
-import { motion } from 'framer-motion'
 import { Upload, Cpu, BarChart3, Fingerprint } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const steps = [
   {
     title: "Upload Image",
-    desc: "Direct ingestion via secure ImageKit pipeline. The system prepares the file for immediate forensic and neural analysis.",
+    desc: "Secure ingestion into our processing sandbox. The system prepares the file for immediate forensic and neural analysis.",
     icon: Upload
   },
   {
-    title: "Deep Analysis",
-    desc: "Parallel scan using Hive AI for generative markers and metadata inspection for provenance verification.",
+    title: "Neural Analysis",
+    desc: "Parallel scan using ensemble local AI models to detect synthetic generative markers and deepfake signatures.",
     icon: Cpu
   },
   {
-    title: "Verification Report",
-    desc: "A unified authenticity signal breakdown highlighting potential manipulation zones and structural inconsistencies.",
+    title: "Forensic Integrity",
+    desc: "Deep inspection of error levels (ELA), compression consistency, and noise distributions to detect manual edits.",
     icon: BarChart3
   }
 ]

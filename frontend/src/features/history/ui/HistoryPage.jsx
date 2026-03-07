@@ -8,6 +8,7 @@ import {
   CheckCircle2, Clock, Upload, ChevronRight
 } from 'lucide-react'
 
+import { cn } from '@/shared/utils/utils'
 import { useHistoryData } from '../hooks/useHistoryData'
 
 const STATUS_CONFIG = {
@@ -130,26 +131,28 @@ export default function HistoryPage() {
           {/* Table */}
           <motion.div
             variants={CONTAINER} initial="hidden" animate="show"
-            className="glass-card rounded-3xl border border-border overflow-hidden"
+            className="glass-card rounded-3xl border border-foreground/8 overflow-hidden shadow-2xl"
           >
             {/* Table header */}
-            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-4 items-center px-6 py-4 border-b border-border text-[9px] font-black tracking-widest text-muted-foreground uppercase">
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-6 items-center px-8 py-5 border-b border-foreground/5 text-[9px] font-black tracking-[0.3em] text-foreground/40 uppercase">
               <div className="size-4" />
-              <span>Image</span>
-              <span className="hidden md:block">Size</span>
-              <span className="hidden lg:block">Date</span>
+              <span>Asset_Identity</span>
+              <span className="hidden md:block">Volume</span>
+              <span className="hidden lg:block">Timestamp</span>
               <span>Status</span>
-              <span>Score</span>
+              <span>Vector_Risk</span>
             </div>
 
             {isLoading ? (
-              <div className="py-20 text-center">
-                <p className="text-muted-foreground/60 font-black text-sm uppercase tracking-widest">Loading history...</p>
+              <div className="py-24 text-center">
+                <p className="text-foreground/20 font-black text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-4">
+                  <Loader2 className="size-4 animate-spin text-primary" /> FETCHING_ARCHIVE...
+                </p>
               </div>
             ) : filtered.length === 0 ? (
-              <div className="py-20 text-center">
-                <p className="text-muted-foreground/60 font-black text-sm">No analyses found</p>
-                <p className="text-muted-foreground/40 text-xs mt-2">Try adjusting your search or filters</p>
+              <div className="py-24 text-center">
+                <p className="text-foreground/20 font-black text-xs uppercase tracking-[0.4em]">NO_RECORDS_FOUND</p>
+                <p className="text-foreground/10 text-[10px] font-bold uppercase tracking-widest mt-3">Refine filters or start new scan</p>
               </div>
             ) : (
               filtered.map((item) => {
@@ -157,53 +160,52 @@ export default function HistoryPage() {
                 const cfg = STATUS_CONFIG[statusKey] || STATUS_FALLBACK;
                 const StatusIcon = cfg.icon
                 const isSelected = selected.has(item.id)
-                // Backend logic: High score = Authentic
                 const displayScore = item.score ?? 0;
-                const scoreColor = displayScore >= 80 ? 'text-emerald-500 dark:text-emerald-400' : displayScore >= 50 ? 'text-amber-500 dark:text-amber-400' : 'text-destructive'
+                const scoreColor = displayScore >= 80 ? 'text-emerald-500' : displayScore >= 50 ? 'text-amber-500' : 'text-destructive'
                 const timeAgo = item.timestamp ? new Date(item.timestamp._seconds * 1000).toLocaleDateString() : 'Just now';
 
                 return (
                   <Link
                     key={item.id}
                     to={`/analyze/${item.id}`}
-                    className={`grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-4 items-center px-6 py-4 border-b border-border hover:bg-card transition-colors cursor-pointer group ${isSelected ? 'bg-primary/5' : ''}`}
+                    className={`grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-6 items-center px-8 py-6 border-b border-foreground/5 hover:bg-foreground/3 transition-all cursor-pointer group ${isSelected ? 'bg-primary/5' : ''}`}
                   >
                     <div
                       role="button"
                       tabIndex={0}
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleSelect(item.id); }}
                       className={`size-4 rounded border flex items-center justify-center transition-all shrink-0 ${
-                        isSelected ? 'bg-primary border-primary' : 'border-border/80 group-hover:border-border0'
+                        isSelected ? 'bg-primary border-primary' : 'border-foreground/20 group-hover:border-foreground/40'
                       }`}
                     >
-                      {isSelected && <div className="size-2 bg-primary-foreground rounded-sm" />}
+                      {isSelected && <div className="size-1.5 bg-background rounded-sm" />}
                     </div>
 
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="size-10 rounded-xl overflow-hidden shrink-0 border border-border/60 bg-card">
-                        {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity" />}
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="size-12 rounded-xl overflow-hidden shrink-0 border border-foreground/5 bg-foreground/3">
+                        {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-foreground/80 group-hover:text-foreground transition-colors truncate">{item.originalName || 'Unknown Image'}</p>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <Clock className="size-2.5 text-muted-foreground/60" />
-                          <span className="text-[9px] text-muted-foreground">{timeAgo}</span>
+                        <p className="text-xs font-black text-foreground uppercase tracking-tight group-hover:text-primary transition-colors truncate">{item.originalName || 'Unknown_Asset'}</p>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <Clock className="size-2.5 text-foreground/20" />
+                          <span className="text-[10px] font-bold text-foreground/30 tabular-nums">{timeAgo}</span>
                         </div>
                       </div>
                     </div>
 
-                    <span className="hidden md:block text-[10px] text-muted-foreground font-bold">{(item.metadata?.FileSize || '0 B')}</span>
+                    <span className="hidden md:block text-[10px] text-foreground/30 font-bold tabular-nums">{(item.metadata?.FileSize || '0 B')}</span>
 
-                    <span className="hidden lg:block text-[10px] text-muted-foreground font-bold">{timeAgo}</span>
+                    <span className="hidden lg:block text-[10px] text-foreground/30 font-bold tabular-nums">{timeAgo}</span>
 
-                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${cfg.bg} border ${cfg.border} shrink-0`}>
-                      <StatusIcon className={`size-2.5 ${cfg.color} shrink-0`} />
-                      <span className={`text-[8px] font-black tracking-widest ${cfg.color} hidden sm:block`}>{cfg.label}</span>
+                    <div className={cn("flex items-center gap-2 px-3 py-1 rounded-full border shadow-sm shrink-0", cfg.bg, cfg.border)}>
+                      <StatusIcon className={cn("size-2.5", cfg.color)} />
+                      <span className={cn("text-[8px] font-black tracking-widest hidden sm:block", cfg.color)}>{cfg.label}</span>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className={`text-sm font-black ${scoreColor}`}>{item.score === null ? '--' : item.score}</span>
-                      <ChevronRight className="size-3 text-muted-foreground/60 group-hover:text-muted-foreground transition-colors" />
+                    <div className="flex items-center gap-4 shrink-0 justify-end">
+                      <span className={`text-sm font-black tabular-nums ${scoreColor}`}>{item.score === null ? '--' : item.score}</span>
+                      <ChevronRight className="size-4 text-foreground/10 group-hover:text-foreground/40 transition-all group-hover:translate-x-1" />
                     </div>
                   </Link>
                 )

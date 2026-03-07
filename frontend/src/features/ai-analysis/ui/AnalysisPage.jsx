@@ -7,40 +7,45 @@ import { Button } from '@/shared/components/ui/button'
 import {
   Upload, X, Search, Shield, Brain, Layers, Activity,
   AlertTriangle, CheckCircle2, Info, Camera, Clock,
-  ChevronDown, ChevronUp, Zap, Eye, FileText, BarChart3, Image, ScanSearch
+  ChevronDown, ChevronUp, Zap, Eye, FileText, BarChart3, Image, ScanSearch, ChevronRight
 } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { resetAnalysis } from '../state/analysisSlice'
 import { loadExistingAnalysis, uploadImageAndAnalyze } from '../state/analysisThunks'
+import { cn } from '@/shared/utils/utils'
 
 const buildSignals = (result) => {
   if (!result || !result.signals) return [
-    { label: 'Local AI Model', value: 0, warning: false },
-    { label: 'AI Model Cross-Verification', value: 0, warning: false },
-    { label: 'Error Level Analysis (ELA)', value: 0, warning: false },
-    { label: 'Metadata Integrity', value: 20, warning: true },
-    { label: 'Compression Consistency', value: 45, warning: true },
-    { label: 'Noise Distribution', value: 35, warning: true },
+    { label: 'Neural AI Detection', value: 0, warning: false },
+    { label: 'Forensic Error Levels (ELA)', value: 0, warning: false },
+    { label: 'Metadata Integrity', value: 0, warning: false },
+    { label: 'Compression Consistency', value: 0, warning: false },
+    { label: 'Noise Distribution', value: 0, warning: false },
   ];
 
   const s = result.signals;
+  const neuralVal = s.neuralScore ?? s.aiProbability ?? 0;
+  const metaVal   = s.metadataScore ?? s.metadataIntegrity ?? 0;
   return [
-    { label: 'Local AI Model',            value: s.localModel1  ?? s.localModel ?? s.aiProbability ?? 0, warning: (s.localModel1 ?? s.localModel ?? s.aiProbability ?? 0) > 60 },
-    { label: 'AI Model Cross-Verification', value: s.localModel2 ?? 0, warning: (s.localModel2 ?? 0) > 60 },
-    { label: 'Error Level Analysis (ELA)', value: s.elaScore     || 0, warning: (s.elaScore || 0) > 30 },
-    { label: 'Metadata Integrity',         value: s.metadataIntegrity    || 0, warning: (s.metadataIntegrity    || 0) < 50 },
-    { label: 'Compression Consistency',    value: s.compressionConsistency || 0, warning: (s.compressionConsistency || 0) < 50 },
-    { label: 'Noise Distribution',         value: s.noiseScore  || 0, warning: (s.noiseScore  || 0) < 50 },
+    { label: 'Neural AI Detection',         value: neuralVal,            warning: neuralVal             >= 65 },
+    { label: 'Forensic Error Levels (ELA)', value: s.elaScore      || 0, warning: (s.elaScore      || 0) > 40 },
+    { label: 'Metadata Integrity',          value: metaVal,              warning: metaVal               < 50 },
+    { label: 'Compression Consistency',     value: s.compressionScore || 0, warning: (s.compressionScore || 0) < 50 },
+    { label: 'Noise Distribution',          value: s.noiseScore    || 0, warning: (s.noiseScore    || 0) < 50 },
   ];
 }
 
 const STATUS_MAP = {
-  'Authentic': { label: 'AUTHENTIC', color: 'text-emerald-500 dark:text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', icon: CheckCircle2, hex: '#10b981' },
+  'Authentic Photo': { label: 'AUTHENTIC', color: 'text-emerald-500 dark:text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', icon: CheckCircle2, hex: '#10b981' },
+  'Uncertain': { label: 'UNCERTAIN', color: 'text-amber-500 dark:text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', icon: AlertTriangle, hex: '#f59e0b' },
   'Possibly Edited': { label: 'POSSIBLY EDITED', color: 'text-amber-500 dark:text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', icon: AlertTriangle, hex: '#f59e0b' },
-  'Likely Manipulated': { label: 'MANIPULATED', color: 'text-orange-500 dark:text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20', icon: AlertTriangle, hex: '#f97316' },
-  'AI Generated': { label: 'AI GENERATED', color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/20', icon: Brain, hex: '#ef4444' },
+  'Edited Image': { label: 'EDITED', color: 'text-orange-500 dark:text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20', icon: AlertTriangle, hex: '#f97316' },
+  'Likely AI Generated': { label: 'AI GENERATED', color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/20', icon: Brain, hex: '#ef4444' },
   'pending': { label: 'ANALYZING', color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', icon: Clock, hex: '#3b82f6' },
-  'analysis_failed': { label: 'FAILED', color: 'text-red-500 dark:text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', icon: AlertTriangle, hex: '#ef4444' }
+  'analysis_failed': { label: 'FAILED', color: 'text-red-500 dark:text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', icon: AlertTriangle, hex: '#ef4444' },
+  // Fallbacks for older DB entries
+  'Authentic': { label: 'AUTHENTIC', color: 'text-emerald-500 dark:text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', icon: CheckCircle2, hex: '#10b981' },
+  'AI Generated': { label: 'AI GENERATED', color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/20', icon: Brain, hex: '#ef4444' },
 }
 
 const STATUS_FALLBACK = { label: 'UNKNOWN', color: 'text-muted-foreground', bg: 'bg-muted/50', border: 'border-border', icon: AlertTriangle, hex: '#888888' };
@@ -80,7 +85,7 @@ function ScoreGauge({ score, statusCfg }) {
           {score === null ? '--' : Math.round(score)}
         </motion.span>
         <span className="text-[9px] font-bold tracking-widest text-muted-foreground mt-1">
-          {displayScore >= 80 ? 'TRUST SCORE' : displayScore < 50 ? 'RISK SCORE' : 'SUSPECT SCORE'}
+          {displayScore < 40 ? 'AUTHENTIC' : displayScore < 70 ? 'POSSIBLY EDITED' : 'AI RISK'}
         </span>
       </div>
     </div>
@@ -305,31 +310,45 @@ export default function AnalysisPage() {
                     key="results"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="space-y-4 md:space-y-6"
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="space-y-6"
                   >
                     {/* Score Card Hero */}
-                    <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden relative">
+                    <div className="glass-card rounded-3xl border border-foreground/8 shadow-2xl overflow-hidden relative group">
                        {/* Subtle animated background gradient based on status */}
-                      <div className={`absolute inset-0 ${statusCfg.bg} opacity-30`} />
+                      <div className={`absolute inset-0 ${statusCfg.bg} opacity-50 blur-3xl -z-10 transition-colors duration-1000`} />
                       
-                      <div className="p-6 relative">
-                        <div className="flex items-center justify-between mb-2">
-                          <h2 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Forensic Verdict</h2>
-                          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full bg-background border border-border shadow-sm`}>
-                            <statusCfg.icon className={`size-3.5 ${statusCfg.color}`} />
-                            <span className={`text-[10px] font-bold tracking-wider ${statusCfg.color}`}>{statusCfg.label}</span>
+                      <div className="p-8 relative">
+                        <div className="flex items-center justify-between mb-8">
+                          <div>
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40 mb-1">Authenticity Report</h2>
+                            <p className="text-[9px] font-bold text-foreground/20 tracking-widest uppercase">ShadowMode Forensic Engine v2.0</p>
+                          </div>
+                          <div className={cn(
+                            "flex items-center gap-2 px-4 py-1.5 rounded-full border shadow-sm transition-all duration-500",
+                            statusCfg.bg, statusCfg.border
+                          )}>
+                            <statusCfg.icon className={cn("size-3.5", statusCfg.color)} />
+                            <span className={cn("text-[10px] font-black tracking-widest uppercase", statusCfg.color)}>{statusCfg.label}</span>
                           </div>
                         </div>
                         
-                        <div className="py-6">
+                        <div className="py-10">
                             <ScoreGauge score={result.score} statusCfg={statusCfg} />
                         </div>
                         
-                        <div className="pt-4 border-t border-border/50">
-                          <p className="text-sm text-foreground leading-relaxed text-center">
-                            {result.explanation || "Analysis in progress... awaiting detailed response."}
-                          </p>
+                        <div className="pt-8 border-t border-foreground/5">
+                          <div className="flex gap-4">
+                             <div className="size-10 rounded-xl bg-foreground/5 flex items-center justify-center shrink-0">
+                                <Info className="size-4 text-foreground/40" />
+                             </div>
+                             <div>
+                               <p className="text-xs font-bold text-foreground/40 uppercase tracking-widest mb-1.5 leading-none">Diagnostic Summary</p>
+                               <p className="text-sm text-foreground/70 leading-relaxed font-medium capitalize">
+                                 {result.explanation || "Analysis in progress... awaiting detailed response."}
+                               </p>
+                             </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -397,23 +416,69 @@ export default function AnalysisPage() {
                         {expandedMeta ? <ChevronUp className="size-4 text-muted-foreground" /> : <ChevronDown className="size-4 text-muted-foreground" />}
                       </button>
                       <AnimatePresence>
-                        {expandedMeta && hasMetadataUrl && (
+                        {expandedMeta && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             className="overflow-hidden bg-card"
                           >
-                            <div className="p-5 border-t border-border grid grid-cols-2 gap-3 bg-muted/10">
-                                {Object.entries(result.metadata || {}).map(([key, val]) => (
-                                  <div key={key} className="p-3 bg-card rounded-xl border border-border/50 flex flex-col justify-center">
-                                    <p className="text-[10px] text-muted-foreground font-semibold uppercase mb-1 truncate">{key}</p>
-                                    <p className="text-xs font-medium text-foreground line-clamp-2">
-                                      {typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val)}
+                            {(() => {
+                              const META_LABELS = {
+                                camera: 'Camera Model', make: 'Manufacturer', model: 'Device Model',
+                                datetime: 'Capture Date', software: 'Software', hasGPS: 'GPS Data', raw: 'Raw EXIF',
+                              };
+                              const allEntries = Object.entries(result.metadata || {});
+                              const present = allEntries.filter(([, v]) =>
+                                v !== null && v !== undefined &&
+                                !(typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0)
+                              );
+                              const missing = allEntries.filter(([, v]) => v === null || v === undefined);
+
+                              if (allEntries.length === 0) return (
+                                <div className="p-6 border-t border-border text-center space-y-1">
+                                  <p className="text-[11px] font-semibold text-muted-foreground">No EXIF metadata found</p>
+                                  <p className="text-[10px] text-muted-foreground/60">AI-generated images typically have no camera metadata.</p>
+                                </div>
+                              );
+
+                              const renderCard = ([key, val]) => {
+                                let display;
+                                if (val === null || val === undefined) {
+                                  display = <span className="text-xs italic text-muted-foreground/50">Not Available</span>;
+                                } else if (typeof val === 'boolean') {
+                                  display = <span className={`text-xs font-bold ${val ? 'text-emerald-500' : 'text-muted-foreground'}`}>{val ? '✓ Yes' : '✗ No'}</span>;
+                                } else if (typeof val === 'object') {
+                                  display = <span className="text-xs font-mono text-muted-foreground break-all line-clamp-2">{JSON.stringify(val)}</span>;
+                                } else {
+                                  display = <span className="text-xs font-medium text-foreground line-clamp-2">{String(val)}</span>;
+                                }
+                                return (
+                                  <div key={key} className="p-3 bg-card rounded-xl border border-border/50 flex flex-col gap-1">
+                                    <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide truncate">
+                                      {META_LABELS[key] || key}
                                     </p>
+                                    {display}
                                   </div>
-                                ))}
-                            </div>
+                                );
+                              };
+
+                              return (
+                                <div className="p-5 border-t border-border bg-muted/10 space-y-4">
+                                  {present.length > 0 && (
+                                    <div className="grid grid-cols-2 gap-3">{present.map(renderCard)}</div>
+                                  )}
+                                  {missing.length > 0 && (
+                                    <>
+                                      {present.length > 0 && (
+                                        <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Missing Fields</p>
+                                      )}
+                                      <div className="grid grid-cols-2 gap-3">{missing.map(renderCard)}</div>
+                                    </>
+                                  )}
+                                </div>
+                              );
+                            })()}
                           </motion.div>
                         )}
                       </AnimatePresence>

@@ -1,10 +1,10 @@
 const SEVERITY_WEIGHTS = { high: 20, medium: 10, low: 5 };
 
 function scoreToVerdict(score) {
-  if (score >= 80) return "Authentic";
-  if (score >= 50) return "Possibly Edited";
-  if (score >= 20) return "Likely Manipulated";
-  return "AI Generated";
+  // score is the combined risk score (higher = more likely AI/manipulated)
+  if (score < 40) return "Authentic Photo";
+  if (score < 70) return "Possibly Edited";
+  return "Likely AI Generated";
 }
 
 export function calculateScore({ elaScore = 0, aiProbability = 0, flags = [] }) {

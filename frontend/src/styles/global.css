@@ -176,32 +176,48 @@
 
 @layer utilities {
   .glass {
-    @apply bg-background/60 backdrop-blur-2xl border border-foreground/5;
+    @apply bg-background/60 backdrop-blur-2xl border border-foreground/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.05)];
   }
 
   .glass-card {
-    @apply bg-foreground/[0.02] backdrop-blur-xl border border-foreground/[0.05] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)];
+    @apply bg-foreground/[0.02] backdrop-blur-xl border border-foreground/[0.08] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)];
+  }
+
+  .bg-mesh {
+    background-image:
+      radial-gradient(at 0% 0%, hsla(var(--primary), 0.15) 0, transparent 50%),
+      radial-gradient(at 50% 0%, hsla(var(--primary), 0.05) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(var(--primary), 0.15) 0, transparent 50%);
+    filter: blur(80px);
   }
 
   .text-glow {
-    text-shadow: 0 0 40px hsla(var(--foreground), 0.1);
+    text-shadow: 0 0 40px hsla(var(--foreground), 0.15);
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-br from-foreground via-foreground to-foreground/50;
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-foreground via-foreground to-foreground/40;
   }
 
   .bg-grid-minimal {
-    background-size: 60px 60px;
+    background-size: 80px 80px;
     background-image:
-      linear-gradient(to right, hsla(var(--border), 0.4) 1px, transparent 1px),
-      linear-gradient(to bottom, hsla(var(--border), 0.4) 1px, transparent 1px);
+      linear-gradient(
+        to right,
+        hsla(var(--foreground), 0.03) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        hsla(var(--foreground), 0.03) 1px,
+        transparent 1px
+      );
   }
 
   .bg-grain {
-    background-image: url("active-document://c:\Users\kashish\OneDrive\Desktop\shadowmode\frontend\public\grain.png");
+    background-image: url("/grain.png");
     background-repeat: repeat;
-    opacity: 0.05;
+    opacity: 0.03;
     pointer-events: none;
   }
 }

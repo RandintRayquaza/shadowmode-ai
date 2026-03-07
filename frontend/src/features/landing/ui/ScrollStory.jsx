@@ -10,24 +10,24 @@ gsap.registerPlugin(ScrollTrigger)
 const stories = [
   {
     title: "AI Detection",
-    tag: "Hive AI Engine",
-    description: "Utilizing the enterprise-grade Hive AI API to analyze images for generative patterns. Our system identifies markers from DALL-E, Midjourney, and Stable Diffusion models without claiming absolute detection.",
+    tag: "Neural Model Ensemble",
+    description: "Utilizing a dual-model processing sequence to analyze images for generative patterns. Our system identifies markers from DALL-E, Midjourney, and Stable Diffusion models using local cross-verification.",
     icon: Brain,
-    image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1632"
+    image: "/AI Analysis Interface 3.png"
   },
   {
     title: "Metadata Trace",
     tag: "EXIF Inspection",
     description: "Deep inspection of embedded image metadata. We extract and verify camera models, capture timestamps, and software modification history to identify missing or manipulated forensic layers.",
     icon: Search,
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?auto=format&fit=crop&q=80&w=1470"
+    image: "/Data Stream Interface 1.png"
   },
   {
     title: "Structural Flux",
     tag: "Anomaly Detection",
     description: "Analyzing compression artifacts and structural inconsistencies. Using Error Level Analysis (ELA) and pixel-level anomaly detection to highlight areas where the image structure deviates from the global baseline.",
     icon: Layers,
-    image: "https://images.unsplash.com/photo-1633412802994-5c058f151b66?auto=format&fit=crop&q=80&w=1470"
+    image: "/Digital Grid Wave 2.png"
   }
 ]
 

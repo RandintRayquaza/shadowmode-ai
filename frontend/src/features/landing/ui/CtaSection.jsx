@@ -26,7 +26,7 @@ export default function CtaSection() {
           </h2>
           
           <p className="text-xl md:text-2xl text-foreground/40 font-medium max-w-2xl mx-auto mb-20 leading-relaxed">
-            Start verifying digital media authenticity today using metadata signals and Hive AI detection.
+            Start verifying digital media authenticity today using metadata signals and neural model cross-verification.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-12">

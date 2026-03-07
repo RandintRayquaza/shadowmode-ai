@@ -11,6 +11,8 @@ import {
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { resetDashboard } from '../state/dashboardSlice'
 import { fetchDashboardData } from '../state/dashboardThunks'
+import { cn } from '@/shared/utils/utils'
+import ErrorBoundary from '@/shared/components/ErrorBoundary'
 
 // Status mapping for real backend verdicts
 const STATUS_CONFIG = {
@@ -84,219 +86,226 @@ export default function DashboardPage() {
   const aiCount = safeAnalyses.filter(a => a.verdict === 'AI Generated').length;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-28 pb-20">
-        <div className="container mx-auto px-6 max-w-7xl">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="pt-28 pb-20">
+          <div className="container mx-auto px-6 max-w-7xl">
 
-          {/* Header */}
-          <motion.div
-            variants={CONTAINER} initial="hidden" animate="show"
-            className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12"
-          >
-            <motion.div variants={ITEM}>
-              <p className="text-[10px] font-black tracking-[0.4em] text-muted-foreground mb-2 uppercase">{greeting}</p>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
-                {(user?.name || 'Agent').split(' ')[0]}<span className="text-primary italic">.</span>
-              </h1>
-              <p className="text-muted-foreground text-sm mt-2">{user?.analysisCount || 0} analyses completed · {user?.plan || 'Free'} plan</p>
-            </motion.div>
-            <motion.div variants={ITEM}>
-              <Link to="/analyze">
-                <Button className="h-12 px-8 rounded-2xl bg-primary hover:bg-primary/80 text-primary-foreground font-black text-xs tracking-widest shadow-[0_0_30px_-8px_hsla(var(--primary),0.5)] group">
-                  <Upload className="size-4 mr-2 group-hover:scale-110 transition-transform" />
-                  NEW ANALYSIS
-                </Button>
-              </Link>
-            </motion.div>
-          </motion.div>
-
-          {/* Stats Grid */}
-          <motion.div
-            variants={CONTAINER} initial="hidden" animate="show"
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-          >
-            {[
-              { label: 'Total Scans', value: user?.analysisCount || safeAnalyses.length, icon: Search, color: 'text-primary', glow: 'shadow-[0_0_30px_-10px_hsla(var(--primary),0.3)]' },
-              { label: 'Authentic', value: authenticCount, icon: CheckCircle2, color: 'text-emerald-500 dark:text-emerald-400', glow: 'shadow-[0_0_30px_-10px_rgba(16,185,129,0.2)]' },
-              { label: 'Manipulated', value: manipulatedCount, icon: AlertTriangle, color: 'text-amber-500 dark:text-amber-400', glow: 'shadow-[0_0_30px_-10px_rgba(245,158,11,0.2)]' },
-              { label: 'AI Generated', value: aiCount, icon: Brain, color: 'text-destructive', glow: 'shadow-[0_0_30px_-10px_rgba(239,68,68,0.2)]' },
-            ].map((stat, i) => (
+            {/* Top Section: Header & Quick Actions */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16 items-start">
               <motion.div
-                key={i}
+                variants={CONTAINER} initial="hidden" animate="show"
+                className="lg:col-span-2"
+              >
+                <motion.div variants={ITEM}>
+                  <p className="text-[10px] font-black tracking-[0.4em] text-foreground/20 mb-3 uppercase tabular-nums">{greeting} // SESSION_ACTIVE</p>
+                  <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground uppercase">
+                    {user?.name?.split(' ')[0] || 'Agent'}<span className="text-primary italic">.</span>
+                  </h1>
+                  <p className="text-foreground/40 text-sm mt-4 font-medium max-w-sm">
+                    Neural forensic pipeline active. Integrity verification systems operational.
+                  </p>
+                </motion.div>
+              </motion.div>
+
+              <motion.div 
                 variants={ITEM}
-                className={`bg-card p-6 rounded-2xl border border-border ${stat.glow} group hover:border-primary/50 transition-all`}
+                initial="hidden" animate="show"
+                className="flex justify-end"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <stat.icon className={`size-5 ${stat.color}`} />
-                  <TrendingUp className="size-3 text-muted-foreground group-hover:text-foreground/70 transition-colors" />
-                </div>
-                <p className="text-3xl font-black text-foreground mb-1">{stat.value}</p>
-                <p className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">{stat.label}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Main grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            {/* Recent Analyses */}
-            <motion.div
-              variants={CONTAINER} initial="hidden" animate="show"
-              className="lg:col-span-2 bg-card rounded-3xl border border-border overflow-hidden"
-            >
-              <div className="flex items-center justify-between p-6 border-b border-border">
-                <div>
-                  <h2 className="text-sm font-black tracking-wider text-foreground">RECENT ANALYSES</h2>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Your latest image forensics</p>
-                </div>
-                <Link to="/history" className="flex items-center gap-1 text-[10px] font-black tracking-widest text-muted-foreground hover:text-primary transition-colors uppercase">
-                  View All <ChevronRight className="size-3" />
+                <Link to="/analyze">
+                  <Button className="h-16 px-10 rounded-full bg-foreground text-background font-black text-[10px] tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 transition-all group">
+                    <Upload className="size-4 mr-3 group-hover:scale-110 transition-transform" />
+                    NEW ANALYSIS
+                  </Button>
                 </Link>
-              </div>
-
-              <div className="divide-y divide-border">
-                {showLoading ? (
-                  <div className="p-8 text-center text-muted-foreground text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-3">
-                    <Loader2 className="size-4 animate-spin" /> Loading analyses...
-                  </div>
-                ) : safeAnalyses.length === 0 ? (
-                  <div className="p-8 text-center text-muted-foreground text-sm font-bold uppercase tracking-widest">No analyses yet. Start exploring!</div>
-                ) : safeAnalyses.map((item) => {
-                  const statusKey = item.status === 'pending' ? 'pending' : item.status === 'analysis_failed' ? 'analysis_failed' : item.verdict;
-                  const cfg = STATUS_CONFIG[statusKey] || STATUS_FALLBACK;
-                  const StatusIcon = cfg.icon;
-                  const timeAgo = item.timestamp ? new Date(item.timestamp._seconds * 1000).toLocaleDateString() : 'Just now';
-                  
-                  return (
-                    <Link
-                      key={item.id}
-                      to={`/analyze/${item.id}`}
-                      className="flex items-center gap-4 p-5 hover:bg-muted/30 transition-colors group cursor-pointer"
-                    >
-                      <div className="size-12 rounded-xl overflow-hidden shrink-0 border border-border bg-muted/10">
-                        {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-foreground truncate">{item.originalName || 'Unknown Image'}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Clock className="size-3 text-muted-foreground/60" />
-                          <span className="text-[10px] text-muted-foreground">{timeAgo}</span>
-                        </div>
-                      </div>
-                      <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${cfg.bg} border ${cfg.border}`}>
-                        <StatusIcon className={`size-3 ${cfg.color}`} />
-                        <span className={`text-[9px] font-black tracking-widest ${cfg.color}`}>{cfg.label}</span>
-                      </div>
-                      <ScoreRing score={item.score} size={52} />
-                    </Link>
-                  )
-                })}
-              </div>
-            </motion.div>
-
-            {/* Right column */}
-            <div className="space-y-4">
-              {/* Quick actions */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="bg-card rounded-3xl border border-border p-6"
-              >
-                <h2 className="text-[10px] font-black tracking-[0.3em] text-muted-foreground mb-5 uppercase">Quick Actions</h2>
-                <div className="space-y-2">
-                  {[
-                    { icon: Upload, label: 'Analyze New Image', to: '/analyze', glow: true },
-                    { icon: History, label: 'View History', to: '/history' },
-                    { icon: Settings, label: 'Account Settings', to: '/settings' },
-                  ].map((action) => (
-                    <Link
-                      key={action.label}
-                      to={action.to}
-                      className={`flex items-center gap-3 p-4 rounded-2xl transition-all group ${
-                        action.glow
-                          ? 'bg-primary/10 border border-primary/20 hover:bg-primary/20'
-                          : 'bg-muted/10 border border-border hover:bg-muted/30'
-                      }`}
-                    >
-                      <action.icon className={`size-4 ${action.glow ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'} transition-colors`} />
-                      <span className={`text-xs font-bold ${action.glow ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'} transition-colors`}>{action.label}</span>
-                      <ChevronRight className="size-3 ml-auto text-muted-foreground/60 transition-colors" />
-                    </Link>
-                  ))}
-                </div>
               </motion.div>
+            </div>
 
-              {/* Plan card */}
+            {/* Middle Section: Recent History (Main Focus) */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.35 }}
-                className="bg-card rounded-3xl border border-primary/20 p-6 relative overflow-hidden"
+                variants={CONTAINER} initial="hidden" animate="show"
+                className="lg:col-span-3 glass-card rounded-3xl border border-foreground/8 overflow-hidden"
               >
-                <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent pointer-events-none" />
-                <div className="relative">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[9px] font-black tracking-widest text-primary border border-primary/20 bg-primary/10 px-2 py-0.5 rounded-full">{user?.plan?.toUpperCase()} PLAN</span>
-                    <Shield className="size-4 text-primary/60" />
+                <div className="flex items-center justify-between p-8 border-b border-foreground/5 bg-foreground/[0.02]">
+                  <div>
+                    <h2 className="text-[10px] font-black tracking-[0.3em] text-foreground/40 uppercase">RECENT_HISTORY</h2>
+                    <p className="text-[9px] font-bold text-foreground/20 tracking-widest uppercase mt-1">Live image forensic audit stream</p>
                   </div>
-                  <p className="text-sm font-black text-foreground mb-1">Monthly Usage</p>
-                  <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-3">
-                    <span>{user?.analysisCount || 0} used</span>
-                    <span>500 limit</span>
-                  </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-primary rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${((user?.analysisCount || 0) / 500) * 100}%` }}
-                      transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    />
-                  </div>
-                  <p className="text-[10px] text-muted-foreground mt-3">{500 - (user?.analysisCount || 0)} analyses remaining this month</p>
+                  <Link to="/history" className="flex items-center gap-2 text-[10px] font-black tracking-widest text-foreground/40 hover:text-foreground transition-colors uppercase">
+                    OPEN ARCHIVE <ChevronRight className="size-3" />
+                  </Link>
                 </div>
-              </motion.div>
 
-              {/* Recent Activity Mini-Chart (Placeholder removed, using real counts) */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="bg-card rounded-3xl border border-border p-6"
-              >
-                <h2 className="text-[10px] font-black tracking-[0.3em] text-muted-foreground mb-5 uppercase">Recent Breakdown</h2>
-                <div className="space-y-4">
-                  {[
-                    { label: 'Authentic', count: authenticCount, color: 'bg-emerald-500' },
-                    { label: 'Manipulated', count: manipulatedCount, color: 'bg-amber-500' },
-                    { label: 'AI Generated', count: aiCount, color: 'bg-destructive' }
-                  ].map((stat, i) => {
-                    const total = authenticCount + manipulatedCount + aiCount || 1;
-                    const pct = (stat.count / total) * 100;
+                <div className="divide-y divide-foreground/5">
+                  {showLoading ? (
+                    <div className="p-20 text-center text-foreground/20 text-[10px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-6">
+                      <Loader2 className="size-8 animate-spin text-primary" /> 
+                      AUTHENTICATING_HISTORY...
+                    </div>
+                  ) : safeAnalyses.length === 0 ? (
+                    <div className="p-20 text-center flex flex-col items-center justify-center gap-6">
+                      <div className="size-16 rounded-3xl bg-foreground/5 flex items-center justify-center">
+                        <Activity className="size-6 text-foreground/20" />
+                      </div>
+                      <p className="text-foreground/20 text-[10px] font-black uppercase tracking-widest">Database_Empty. Upload to begin.</p>
+                    </div>
+                  ) : safeAnalyses.map((item) => {
+                    const statusKey = item.status === 'pending' ? 'pending' : item.status === 'analysis_failed' ? 'analysis_failed' : item.verdict;
+                    const cfg = STATUS_CONFIG[statusKey] || STATUS_FALLBACK;
+                    const StatusIcon = cfg.icon;
+                    const timeAgo = item.timestamp ? new Date(item.timestamp._seconds * 1000).toLocaleDateString() : 'Just now';
+                    
                     return (
-                      <div key={i}>
-                         <div className="flex justify-between text-[10px] font-bold text-muted-foreground mb-1.5">
-                           <span>{stat.label}</span>
-                           <span>{stat.count}</span>
-                         </div>
-                         <div className="h-1 bg-muted rounded-full overflow-hidden">
-                           <motion.div 
-                             className={`h-full ${stat.color} rounded-full`}
-                             initial={{ width: 0 }}
-                             animate={{ width: `${pct}%` }}
-                             transition={{ duration: 1, delay: 0.6 + i * 0.1 }}
-                           />
-                         </div>
-                      </div>
+                      <Link
+                        key={item.id}
+                        to={`/analyze/${item.id}`}
+                        className="flex items-center gap-6 p-6 hover:bg-foreground/3 transition-colors group cursor-pointer"
+                      >
+                        <div className="size-14 rounded-2xl overflow-hidden shrink-0 border border-foreground/5 bg-foreground/2 relative">
+                          {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />}
+                          <div className="absolute inset-0 bg-linear-to-t from-background/40 to-transparent pointer-events-none" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-black text-foreground truncate uppercase tracking-tight">{item.originalName || 'Unknown_Asset'}</p>
+                          <div className="flex items-center gap-3 mt-1.5">
+                            <Clock className="size-3 text-foreground/20" />
+                            <span className="text-[10px] font-bold text-foreground/30 tabular-nums">{timeAgo}</span>
+                          </div>
+                        </div>
+                        <div className={cn("hidden sm:flex items-center gap-2 px-3 py-1 rounded-full border shadow-sm", cfg.bg, cfg.border)}>
+                          <StatusIcon className={cn("size-3", cfg.color)} />
+                          <span className={cn("text-[9px] font-black tracking-widest", cfg.color)}>{cfg.label}</span>
+                        </div>
+                        <ScoreRing score={item.score} size={60} />
+                        <ChevronRight className="size-4 text-foreground/10 group-hover:text-foreground/40 transition-colors" />
+                      </Link>
                     )
                   })}
                 </div>
               </motion.div>
+
+              {/* Right Sidebar: Intelligence & Status */}
+              <div className="space-y-6">
+                {/* Real-time breakdown */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="glass-card rounded-3xl border border-foreground/8 p-8"
+                >
+                  <h2 className="text-[10px] font-black tracking-widest text-foreground/40 mb-8 uppercase">SIGNAL_STRENGTH</h2>
+                  
+                  {/* Summary of the most recent result if available */}
+                  {safeAnalyses.length > 0 ? (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                         <p className="text-[9px] font-black text-foreground/40 uppercase tracking-widest">LATEST_SCAN</p>
+                         <span className="text-[10px] font-black text-primary tabular-nums">{safeAnalyses[0].score}%</span>
+                      </div>
+                      <div className="h-2 bg-foreground/5 rounded-full overflow-hidden">
+                        <motion.div 
+                          className="h-full bg-primary"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${safeAnalyses[0].score}%` }}
+                        />
+                      </div>
+                      <p className="text-[10px] font-bold text-foreground/60 leading-relaxed italic">
+                        "{safeAnalyses[0].explanation?.substring(0, 100)}..."
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-[10px] text-foreground/20 font-black uppercase tracking-widest">Awaiting signal data...</p>
+                  )}
+
+                  <div className="mt-12 space-y-4 pt-12 border-t border-foreground/5">
+                    {[
+                      { label: 'Authentic', count: authenticCount, color: 'bg-emerald-500' },
+                      { label: 'Manipulated', count: manipulatedCount, color: 'bg-amber-500' },
+                      { label: 'AI Generated', count: aiCount, color: 'bg-destructive' }
+                    ].map((stat, i) => {
+                      const total = authenticCount + manipulatedCount + aiCount || 1;
+                      const pct = (stat.count / total) * 100;
+                      return (
+                        <div key={i}>
+                           <div className="flex justify-between text-[9px] font-black text-foreground/40 mb-2 uppercase">
+                             <span>{stat.label}</span>
+                             <span className="tabular-nums">{stat.count}</span>
+                           </div>
+                           <div className="h-1 bg-foreground/5 rounded-full overflow-hidden">
+                             <motion.div 
+                               className={`h-full ${stat.color} rounded-full`}
+                               initial={{ width: 0 }}
+                               animate={{ width: `${pct}%` }}
+                               transition={{ duration: 1, delay: 0.6 + i * 0.1 }}
+                             />
+                           </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+
+                {/* Operations */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="glass-card rounded-3xl border border-foreground/8 p-8"
+                >
+                  <h2 className="text-[10px] font-black tracking-widest text-foreground/40 mb-6 uppercase">OPERATIONS</h2>
+                  <div className="space-y-2">
+                    {[
+                      { icon: Upload, label: 'NEW UPLOAD', to: '/analyze' },
+                      { icon: History, label: 'ARCHIVE', to: '/history' },
+                      { icon: Settings, label: 'SYSTEM_CONFIG', to: '/settings' },
+                    ].map((action) => (
+                      <Link
+                        key={action.label}
+                        to={action.to}
+                        className="flex items-center gap-4 p-4 rounded-2xl hover:bg-foreground/5 group transition-colors"
+                      >
+                        <action.icon className="size-4 text-foreground/20 group-hover:text-primary transition-colors" />
+                        <span className="text-[10px] font-black tracking-widest text-foreground/40 group-hover:text-foreground uppercase">{action.label}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </motion.div>
+                
+                {/* Plan Level */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="glass-card rounded-3xl border border-primary/20 p-8 relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent pointer-events-none group-hover:opacity-40 transition-opacity" />
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="text-[9px] font-black tracking-[0.3em] text-primary border border-primary/20 bg-primary/10 px-3 py-1 rounded-full uppercase tabular-nums">Vector_{user?.plan?.toUpperCase() || 'CORE'}</span>
+                      <Shield className="size-4 text-primary/60" />
+                    </div>
+                    <p className="text-[10px] font-black tracking-[0.2em] text-foreground/40 uppercase mb-4">RESOURCE_UTILIZATION</p>
+                    <div className="flex items-center justify-between text-[11px] font-bold text-foreground/60 mb-3 tabular-nums">
+                      <span>{user?.analysisCount || 0} audits</span>
+                      <span>500 LIMIT</span>
+                    </div>
+                    <div className="h-1.5 bg-foreground/5 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-primary rounded-full shadow-[0_0_12px_hsla(var(--primary),0.5)]"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${((user?.analysisCount || 0) / 500) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   )
 }
