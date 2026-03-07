@@ -60,8 +60,8 @@ export default function TechnologySection() {
       <div className="container mx-auto px-12 relative z-10 max-w-7xl">
         <div className="max-w-3xl mb-40">
           <div className="flex items-center gap-4 mb-8">
-            <div className="h-px w-12 bg-foreground/20" />
-            <span className="text-[10px] font-black tracking-[0.4em] uppercase text-foreground/40">Technical Specifications</span>
+            <div className="h-px w-12 bg-brand/40" />
+            <span className="text-[10px] font-black tracking-[0.4em] uppercase text-brand/70">Technical Specifications</span>
           </div>
           
           <motion.h2
@@ -83,21 +83,21 @@ export default function TechnologySection() {
         <div className="space-y-0">
           {TECH_LAYERS.map((tech, i) => (
             <div key={i} className="group border-t border-foreground/5 relative overflow-hidden">
-              <div className="tech-line absolute top-0 left-0 h-px bg-foreground/20 w-full" />
+              <div className="tech-line absolute top-0 left-0 h-px bg-brand/30 w-full" />
               
               <div className="grid grid-cols-1 lg:grid-cols-[120px_1fr_auto] gap-20 py-24 px-8 hover:bg-foreground/1 transition-all duration-700 cursor-default">
-                <span className="text-5xl font-black text-foreground/5 group-hover:text-foreground/10 transition-colors tabular-nums">{tech.layer}</span>
+                <span className="text-5xl font-black text-brand/10 group-hover:text-brand/25 transition-colors tabular-nums">{tech.layer}</span>
 
                 <div className="max-w-3xl">
                   <div className="flex flex-col gap-4 mb-10">
-                    <span className="text-[10px] font-black tracking-widest text-foreground/20 uppercase">{tech.tag}</span>
+                    <span className="text-[10px] font-black tracking-widest text-brand/60 uppercase">{tech.tag}</span>
                     <h3 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter uppercase group-hover:translate-x-4 transition-transform duration-700 ease-expo">{tech.title}</h3>
                   </div>
                   <p className="text-foreground/40 text-lg font-medium leading-relaxed mb-10">{tech.description}</p>
                   
                   <div className="flex gap-4">
                     {tech.details.map((detail, idx) => (
-                      <span key={idx} className="px-4 py-2 rounded-full border border-foreground/5 text-[9px] font-bold tracking-widest text-foreground/40 uppercase">
+                      <span key={idx} className="px-4 py-2 rounded-full border border-brand/15 bg-brand/[0.04] text-[9px] font-bold tracking-widest text-brand/60 uppercase">
                         {detail}
                       </span>
                     ))}

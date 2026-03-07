@@ -18,7 +18,7 @@ export const fetchAnalysisResult = createAsyncThunk(
 // We define a polling utility that can be dispatched or called
 export const startPolling = createAsyncThunk(
   'analysis/poll',
-  async (analysisId, { dispatch, getState }) => {
+  async (analysisId, { dispatch }) => {
     return new Promise((resolve) => {
       const poll = async () => {
          const resultAction = await dispatch(fetchAnalysisResult(analysisId));

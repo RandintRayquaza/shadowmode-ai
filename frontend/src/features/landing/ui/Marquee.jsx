@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion'
 
 const MARQUEE_ITEMS = [
@@ -22,10 +23,10 @@ export default function Marquee() {
         >
           {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
             <div key={i} className="flex items-center gap-20">
-              <span className="text-[10vw] font-black uppercase tracking-tighter text-foreground/5 transition-colors hover:text-foreground/20 cursor-default">
+              <span className="text-[10vw] font-black uppercase tracking-tighter text-foreground/5 transition-colors hover:text-brand/20 cursor-default">
                 {item}
               </span>
-              <div className="size-4 rounded-full border border-foreground/10" />
+              <div className="size-3 rounded-full bg-brand/20 border border-brand/30" />
             </div>
           ))}
         </motion.div>

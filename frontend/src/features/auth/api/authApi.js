@@ -54,7 +54,7 @@ export const authApi = {
     }
     window.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
       size: "invisible",
-      callback: (response) => {
+      callback: () => {
         // reCAPTCHA solved, allow signInWithPhoneNumber.
       }
     });

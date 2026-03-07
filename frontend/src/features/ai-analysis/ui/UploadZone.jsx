@@ -1,13 +1,19 @@
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
-import { Upload, X, FileText, CheckCircle2, ShieldAlert, Zap, Search, Lock, Fingerprint, ArrowRight } from 'lucide-react'
+import { Upload, X, FileText, ArrowRight, ScanSearch } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { useAuth } from '@/app/providers/AuthContext'
-import gsap from 'gsap'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { uploadImageAndAnalyze } from '../state/analysisThunks'
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion' // Keep framer-motion as it's used
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Lock, Fingerprint } from 'lucide-react' // Added missing imports for Lock and Fingerprint
+
+gsap.registerPlugin(ScrollTrigger)
+
 export default function UploadZone() {
   const [file, setFile] = useState(null)
   const { user } = useAuth()

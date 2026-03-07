@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { Link, useLocation } from 'react-router-dom'
+
 import { useAuthActions } from '../hooks/useAuthActions'
 import { useAuthStore } from '../state/useAuthStore'
 import { Button } from '@/shared/components/ui/button'
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2, Fingerprint } from 'lucide-react'
+import { Eye, EyeOff, ArrowRight, Loader2, Fingerprint, ScanSearch } from 'lucide-react'
 
 export default function LoginPage() {
   const { login, loginWithGoogle } = useAuthActions()
   const { loading } = useAuthStore()
-  const navigate = useNavigate()
+  
   const location = useLocation()
-  const from = location.state?.from?.pathname || '/dashboard'
+
 
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
@@ -35,10 +35,11 @@ export default function LoginPage() {
       <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-foreground/5 to-transparent" />
 
       {/* Navigation */}
-      <Link to="/" className="absolute top-12 left-12 flex items-center gap-4 group z-50">
-        <span className="text-xl font-black tracking-tighter text-foreground uppercase">ShadowMode</span>
-        <div className="h-4 w-px bg-foreground/10" />
-        <span className="text-[10px] font-black tracking-widest text-foreground/40 uppercase">v4.0.1</span>
+      <Link to="/" className="absolute top-12 left-12 flex items-center gap-2.5 group z-50">
+        <div className="size-8 rounded-xl bg-brand/15 border border-brand/30 flex items-center justify-center">
+          <ScanSearch className="size-4 text-brand" />
+        </div>
+        <span className="text-sm font-black tracking-tighter text-foreground uppercase">ShadowMode</span>
       </Link>
 
       <div className="relative z-10 w-full max-w-sm mx-auto px-6 py-20">
@@ -53,7 +54,10 @@ export default function LoginPage() {
               Secure <br />
               <span className="font-serif italic font-light lowercase text-foreground/20">Access.</span>
             </h1>
-            <p className="text-foreground/40 text-[10px] font-black tracking-widest uppercase">Verification Terminal</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand/20 bg-brand/5">
+              <div className="size-1 rounded-full bg-brand animate-pulse" />
+              <span className="text-[9px] font-black tracking-[0.2em] text-brand/70 uppercase">Verification Terminal</span>
+            </div>
           </div>
 
           <div className="space-y-8">
@@ -67,7 +71,7 @@ export default function LoginPage() {
                     placeholder="EMAIL_ADDRESS"
                     value={form.email}
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                    className="w-full bg-foreground/2 border border-foreground/5 rounded-2xl pl-24 pr-6 py-5 text-xs text-foreground font-bold placeholder:text-foreground/10 focus:border-foreground/20 focus:bg-foreground/4 outline-none transition-all tabular-nums"
+                    className="w-full bg-foreground/[0.02] border border-foreground/8 rounded-2xl pl-24 pr-6 py-5 text-xs text-foreground font-bold placeholder:text-foreground/10 focus:border-brand/30 focus:bg-brand/[0.02] outline-none transition-all tabular-nums"
                   />
                 </div>
 
@@ -78,7 +82,7 @@ export default function LoginPage() {
                     placeholder="********"
                     value={form.password}
                     onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                    className="w-full bg-foreground/2 border border-foreground/5 rounded-2xl pl-24 pr-16 py-5 text-xs text-foreground font-bold placeholder:text-foreground/10 focus:border-foreground/20 focus:bg-foreground/4 outline-none transition-all"
+                    className="w-full bg-foreground/[0.02] border border-foreground/8 rounded-2xl pl-24 pr-16 py-5 text-xs text-foreground font-bold placeholder:text-foreground/10 focus:border-brand/30 focus:bg-brand/[0.02] outline-none transition-all"
                   />
                   <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-6 top-1/2 -translate-y-1/2 text-foreground/20 hover:text-foreground transition-colors">
                     {showPass ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -93,7 +97,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-16 rounded-2xl bg-foreground text-background font-bold text-xs tracking-[0.2em] transition-all hover:scale-[1.02] active:scale-[0.98] group uppercase"
+                className="w-full h-14 rounded-2xl bg-brand text-background font-black text-[10px] tracking-[0.2em] uppercase hover:opacity-90 hover:shadow-[0_4px_20px_hsla(186,90%,52%,0.35)] active:scale-[0.98] transition-all group"
               >
                 {loading ? <Loader2 className="size-4 animate-spin" /> : (
                   <>Connect Terminal <ArrowRight className="ml-3 font-bold transition-transform group-hover:translate-x-1" /></>
@@ -111,10 +115,10 @@ export default function LoginPage() {
               <button
                 onClick={handleGoogle}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 py-5 rounded-2xl border border-foreground/5 hover:border-foreground/10 hover:bg-foreground/2 transition-all group"
+                className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl border border-foreground/8 hover:border-brand/20 hover:bg-brand/[0.03] transition-all group"
               >
-                <Fingerprint className="size-4 text-foreground/40 group-hover:text-foreground transition-colors" />
-                <span className="text-[10px] font-black text-foreground/40 tracking-widest uppercase group-hover:text-foreground transition-colors">Google Sync</span>
+                <Fingerprint className="size-4 text-foreground/40 group-hover:text-brand transition-colors" />
+                <span className="text-[10px] font-black text-foreground/40 tracking-widest uppercase group-hover:text-brand transition-colors">Google Sync</span>
               </button>
             </div>
 

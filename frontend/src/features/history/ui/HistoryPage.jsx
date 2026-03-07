@@ -1,28 +1,29 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import Navbar from '@/shared/components/Navbar'
 import { Button } from '@/shared/components/ui/button'
+import { Search, Filter, Download, Trash2 } from 'lucide-react'
+import { motion } from 'framer-motion'
 import {
-  Search, Filter, Download, Trash2, Brain, AlertTriangle,
-  CheckCircle2, Clock, Upload, ChevronRight
+   Brain, AlertTriangle,
+  CheckCircle2, Clock, Upload, ChevronRight, Loader2, Activity, ScanSearch
 } from 'lucide-react'
 
 import { cn } from '@/shared/utils/utils'
 import { useHistoryData } from '../hooks/useHistoryData'
 
 const STATUS_CONFIG = {
-  'Authentic': { color: 'text-emerald-500 dark:text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20', icon: CheckCircle2, label: 'AUTHENTIC' },
-  'Possibly Edited': { color: 'text-amber-500 dark:text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/20', icon: AlertTriangle, label: 'POSSIBLY EDITED' },
-  'Likely Manipulated': { color: 'text-orange-500 dark:text-orange-400', bg: 'bg-orange-400/10', border: 'border-orange-400/20', icon: AlertTriangle, label: 'MANIPULATED' },
+  'Authentic': { color: 'text-emerald-500 dark:text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', icon: CheckCircle2, label: 'AUTHENTIC' },
+  'Possibly Edited': { color: 'text-amber-500 dark:text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', icon: AlertTriangle, label: 'POSSIBLY EDITED' },
+  'Likely Manipulated': { color: 'text-orange-500 dark:text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20', icon: AlertTriangle, label: 'MANIPULATED' },
   'AI Generated': { color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/20', icon: Brain, label: 'AI GENERATED' },
-  'pending': { color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/20', icon: Clock, label: 'ANALYZING' },
-  'analysis_failed': { color: 'text-red-500 dark:text-red-400', bg: 'bg-red-400/10', border: 'border-red-400/20', icon: AlertTriangle, label: 'FAILED' }
-}
+  'pending': { color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', icon: Clock, label: 'ANALYZING' },
+  'analysis_failed': { color: 'text-red-500 dark:text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', icon: AlertTriangle, label: 'FAILED' }
+};
 
 const STATUS_FALLBACK = { color: 'text-muted-foreground', bg: 'bg-card', border: 'border-border/60', icon: AlertTriangle, label: 'UNKNOWN' };
 
-const FILTERS = ['All', 'Authentic', 'Possibly Edited', 'Likely Manipulated', 'AI Generated']
+const FILTERS = ['All', 'Authentic', 'Possibly Edited', 'Likely Manipulated', 'AI Generated'];
 
 const CONTAINER = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05 } } }
 const ITEM = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }

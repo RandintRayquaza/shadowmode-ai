@@ -7,5 +7,5 @@ export const store = configureStore({
     analysis: analysisReducer,
     dashboard: dashboardReducer,
   },
-  devTools: process.env.NODE_ENV !== 'production',
+  devTools: import.meta.env.MODE !== 'production',
 });

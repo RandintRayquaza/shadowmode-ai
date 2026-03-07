@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
 import { useAuthActions } from '../hooks/useAuthActions'
 import { useAuthStore } from '../state/useAuthStore'
 import { Button } from '@/shared/components/ui/button'
@@ -9,7 +9,7 @@ import { Phone, ArrowRight, ArrowLeft, Loader2, RefreshCw, Check } from 'lucide-
 export default function OtpPage() {
   const { sendOtp, verifyOtp } = useAuthActions()
   const { loading } = useAuthStore()
-  const navigate = useNavigate()
+  
   const [step, setStep] = useState('phone') // 'phone' | 'otp'
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
@@ -90,10 +90,10 @@ export default function OtpPage() {
                     
                     <Button
                       type="submit"
-                      disabled={sending || !phone}
+                      disabled={loading || !phone}
                       className="w-full h-16 rounded-2xl bg-foreground text-background font-bold text-xs tracking-[0.2em] transition-all hover:scale-[1.02] active:scale-[0.98] group uppercase"
                     >
-                      {sending ? <Loader2 className="size-4 animate-spin" /> : <>Request Signal <ArrowRight className="ml-3 font-bold transition-transform group-hover:translate-x-1" /></>}
+                      {loading ? <Loader2 className="size-4 animate-spin" /> : <>Request Signal <ArrowRight className="ml-3 font-bold transition-transform group-hover:translate-x-1" /></>}
                     </Button>
                   </form>
 

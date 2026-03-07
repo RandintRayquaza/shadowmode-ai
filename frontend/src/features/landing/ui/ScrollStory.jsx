@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
-import { motion } from 'framer-motion'
+
 import { Brain, Search, Layers, ArrowRight, Activity } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -37,7 +37,7 @@ export default function ScrollStory() {
   useGSAP(() => {
     const panels = gsap.utils.toArray('.story-panel')
     
-    panels.forEach((panel, i) => {
+    panels.forEach((panel) => {
       ScrollTrigger.create({
         trigger: panel,
         start: 'top top',
@@ -71,8 +71,8 @@ export default function ScrollStory() {
           <div className="container mx-auto px-12 grid grid-cols-1 lg:grid-cols-2 gap-32 items-center relative z-10 story-content">
             <div className="order-2 lg:order-1 max-w-xl">
               <div className="flex items-center gap-4 mb-10">
-                <div className="h-px w-8 bg-foreground/20" />
-                <span className="text-[10px] font-black tracking-[0.4em] uppercase text-foreground/40">{story.tag}</span>
+                <div className="h-px w-8 bg-brand/40" />
+                <span className="text-[10px] font-black tracking-[0.4em] uppercase text-brand/70">{story.tag}</span>
               </div>
               
               <h2 className="text-7xl md:text-9xl font-black text-foreground mb-12 leading-[0.8] tracking-tighter uppercase">
@@ -108,8 +108,8 @@ export default function ScrollStory() {
                     </div>
 
                     <div className="absolute bottom-8 right-8 flex items-center gap-4">
-                      <div className="size-2 rounded-full bg-foreground/40 animate-pulse" />
-                      <span className="text-[8px] font-black text-foreground/40 uppercase tracking-widest text-right tabular-nums">SCAN_COORD: {482 + i * 12}.{912 - i * 4}</span>
+                      <div className="size-2 rounded-full bg-brand animate-pulse" />
+                      <span className="text-[8px] font-black text-brand/60 uppercase tracking-widest text-right tabular-nums">SCAN_COORD: {482 + i * 12}.{912 - i * 4}</span>
                     </div>
                     
                     <div className="absolute inset-0 bg-linear-to-t from-background/20 to-transparent" />

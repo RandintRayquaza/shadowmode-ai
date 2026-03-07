@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
-import { Upload, Cpu, BarChart3, Fingerprint } from 'lucide-react'
+import { Upload, Cpu, BarChart3, Fingerprint, ScanSearch } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -58,7 +58,7 @@ export default function HowItWorks() {
         style={{ width: `fit-content` }} 
       >
         <div className="flex-shrink-0 w-[40vw] pr-20">
-           <span className="text-[10px] font-black tracking-[0.4em] mb-8 block uppercase text-foreground/40">The Methodology</span>
+           <span className="text-[10px] font-black tracking-[0.4em] mb-8 block uppercase text-brand/70">The Methodology</span>
            <h2 className="text-7xl md:text-[8vw] font-black text-foreground leading-[0.85] mb-12 uppercase tracking-tighter">
              How it <br />
              <span className="font-serif italic font-light lowercase text-foreground/20">works.</span>
@@ -70,24 +70,24 @@ export default function HowItWorks() {
 
         {steps.map((step, i) => (
           <div key={i} className="flex-shrink-0 w-[50vw] px-12">
-            <div className="relative h-[60vh] border border-foreground/5 bg-foreground/1 rounded-4xl p-20 flex flex-col justify-between group overflow-hidden transition-all duration-1000 shadow-2-xl">
-               {/* Background detail */}
+            <div className="relative h-[60vh] border border-foreground/8 bg-foreground/[0.015] rounded-4xl p-20 flex flex-col justify-between group overflow-hidden transition-all duration-700 shadow-2-xl hover:border-brand/20 hover:shadow-[0_0_60px_-15px_hsla(186,90%,52%,0.15)]">
+                 <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-brand/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">
                   <step.icon size={240} className="stroke-[0.5]" />
                </div>
                
                <div className="relative z-10">
-                 <span className="text-8xl font-black text-foreground/5 mb-10 block tabular-nums">0{i + 1}</span>
+                 <span className="text-8xl font-black text-brand/10 mb-10 block tabular-nums group-hover:text-brand/20 transition-colors duration-700">{String(i + 1).padStart(2, '0')}</span>
                  <h3 className="text-5xl md:text-6xl font-black text-foreground mb-10 tracking-tighter uppercase">{step.title}</h3>
                  <p className="text-xl text-foreground/40 font-medium leading-relaxed max-w-md">{step.desc}</p>
                </div>
 
                <div className="relative z-10 flex items-center justify-between pt-10 border-t border-foreground/5">
                   <div className="flex items-center gap-4">
-                    <div className="size-12 rounded-full border border-foreground/10 flex items-center justify-center">
-                       <Fingerprint className="size-4 opacity-40" />
+                    <div className="size-12 rounded-full border border-brand/20 bg-brand/5 flex items-center justify-center">
+                       <div className="size-1.5 rounded-full bg-brand animate-pulse" />
                     </div>
-                    <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-foreground/30">Protocol Active</span>
+                    <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-brand/50">Protocol Active</span>
                   </div>
                   <span className="text-[10px] font-black tracking-widest uppercase text-foreground/60">Core_Vector_0{i + 1}</span>
                </div>

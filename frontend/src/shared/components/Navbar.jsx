@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/shared/components/ui/button'
 import { useAuth } from '@/app/providers/AuthContext'
-import { Github, Menu, X, LogOut, LayoutDashboard, History, Settings, Upload, ArrowRight, ShieldCheck } from 'lucide-react'
+import { Menu, X, LogOut, LayoutDashboard, History, Settings, Upload, ScanSearch } from 'lucide-react'
 import { cn } from '@/shared/utils/utils'
 
 const NAV_LINKS = [
-  { label: 'Home', to: '/' },
   { label: 'How it Works', anchor: 'how-it-works' },
   { label: 'Technology', anchor: 'technology' },
-  { label: 'Security', anchor: 'security' },
+  { label: 'Features', anchor: 'features' },
 ]
 
 export default function Navbar() {
@@ -21,7 +21,7 @@ export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  useEffect(() => {
+  useEffect(() => { 
     const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
@@ -55,20 +55,20 @@ export default function Navbar() {
   return (
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-[100] transition-all duration-700 ease-[0.16,1,0.3,1]",
-      scrolled ? "py-4" : "py-8"
+      scrolled ? "py-3" : "py-6"
     )}>
       <div className={cn(
-        "max-w-[1400px] mx-auto px-8 md:px-12 h-20 flex items-center justify-between transition-all duration-700",
-        scrolled ? "bg-background/40 backdrop-blur-2xl border border-foreground/8 rounded-3xl mx-4 md:mx-12 shadow-2xl" : "bg-transparent border-b border-foreground/5"
+        "max-w-[1400px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between transition-all duration-700",
+        scrolled
+          ? "bg-background/70 backdrop-blur-2xl border border-foreground/8 rounded-2xl mx-4 md:mx-8 shadow-[0_8px_40px_rgba(0,0,0,0.4)]"
+          : "bg-transparent"
       )}>
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="size-8 rounded-lg bg-foreground flex items-center justify-center group-hover:rotate-12 transition-transform duration-500">
-             <ShieldCheck size={18} className="text-background" />
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="size-8 rounded-xl bg-brand/15 border border-brand/30 flex items-center justify-center group-hover:bg-brand/20 transition-all duration-300">
+            <ScanSearch className="size-4 text-brand" />
           </div>
-          <span className="text-sm font-black tracking-[0.3em] uppercase transition-all duration-500">
-            ShadowMode
-          </span>
+          <span className="text-sm font-black tracking-tighter text-foreground uppercase">ShadowMode</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -77,7 +77,7 @@ export default function Navbar() {
             <button
               key={link.label}
               onClick={() => handleLinkClick(link)}
-              className="text-[10px] font-bold tracking-[0.2em] text-foreground/40 hover:text-foreground transition-all duration-300 uppercase relative group"
+              className="text-[10px] font-black tracking-[0.2em] text-foreground/35 hover:text-foreground transition-all duration-300 uppercase relative group"
             >
               {link.label}
               <span className="absolute -bottom-1 left-0 w-0 h-px bg-foreground transition-all duration-300 group-hover:w-full" />
@@ -89,10 +89,8 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-6">
           {user ? (
             <div className="flex items-center gap-6">
-              <Link to="/dashboard">
-                <Button variant="ghost" className="text-[10px] font-black tracking-widest text-foreground/60 hover:text-foreground uppercase">
-                  DASHBOARD
-                </Button>
+              <Link to="/dashboard" className="text-[10px] font-black tracking-widest text-foreground/40 hover:text-foreground uppercase transition-colors">
+                Dashboard
               </Link>
               <div className="relative">
                 <button
@@ -148,17 +146,13 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <Link 
-                to="/login" 
-                className="px-6 py-2.5 rounded-full text-[10px] font-black tracking-widest uppercase text-foreground/60 hover:text-foreground transition-all"
-              >
-                Login
+              <Link to="/login" className="text-[10px] font-black tracking-widest uppercase text-foreground/40 hover:text-foreground transition-colors">
+                Sign In
               </Link>
-              <Link 
-                to="/signup" 
-                className="px-8 py-3 rounded-full bg-foreground text-background text-[10px] font-black tracking-widest uppercase transition-all hover:scale-105 hover:shadow-xl active:scale-95"
-              >
-                Sign Up
+              <Link to="/signup">
+                <Button className="h-9 px-5 rounded-xl bg-brand text-background text-[10px] font-black tracking-[0.15em] uppercase hover:opacity-90 hover:shadow-[0_4px_16px_hsla(186,90%,52%,0.35)] active:scale-[0.97] transition-all">
+                  Get Started
+                </Button>
               </Link>
             </div>
           )}

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { store } from "@/store/store";
 import { resetAnalysis } from "@/features/ai-analysis/state/analysisSlice";
 import { resetDashboard } from "@/features/dashboard/state/dashboardSlice";
-import { fetchDashboardData } from "@/features/dashboard/state/dashboardThunks";
+
 
 // Keys to scrub from local/session storage on logout
 const SESSION_KEYS = ["analysisData", "authUser", "analysisHistory"];

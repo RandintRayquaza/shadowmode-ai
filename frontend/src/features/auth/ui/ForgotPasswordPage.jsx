@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { Button } from '@/shared/components/ui/button'
 import { Mail, ArrowRight, ArrowLeft, Loader2, Check } from 'lucide-react'
 

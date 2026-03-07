@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @theme {
+  --color-brand: hsl(var(--brand));
+  --color-brand-dim: hsl(var(--brand-dim));
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
@@ -86,10 +88,45 @@
       transform: translateY(0);
     }
   }
+
+  --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-scanline: scanline 4s linear infinite;
+  --animate-flicker: flicker 0.15s ease-in-out infinite alternate;
+  --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
+  --animate-slide-in-up: slide-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes scanline {
+    0% { transform: translateY(-100%); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(2000%); opacity: 0; }
+  }
+
+  @keyframes flicker {
+    0% { opacity: 1; }
+    100% { opacity: 0.9; }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 20px hsla(var(--brand), 0.2); }
+    50% { box-shadow: 0 0 40px hsla(var(--brand), 0.4), 0 0 60px hsla(var(--brand), 0.2); }
+  }
+
+  @keyframes slide-in-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }
 
 @layer base {
   :root {
+    --brand: 186 90% 45%;
+    --brand-dim: 186 50% 90%;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
 
@@ -122,8 +159,10 @@
   }
 
   .dark {
-    --background: 0 0% 2%;
-    --foreground: 0 0% 98%;
+    --background: 220 13% 3%;
+    --foreground: 0 0% 97%;
+    --brand: 186 90% 52%;
+    --brand-dim: 186 50% 18%;
 
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -185,10 +224,103 @@
 
   .bg-mesh {
     background-image:
-      radial-gradient(at 0% 0%, hsla(var(--primary), 0.15) 0, transparent 50%),
-      radial-gradient(at 50% 0%, hsla(var(--primary), 0.05) 0, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(var(--primary), 0.15) 0, transparent 50%);
-    filter: blur(80px);
+      radial-gradient(at 0% 0%, hsla(var(--brand), 0.08) 0, transparent 50%),
+      radial-gradient(at 50% 0%, hsla(var(--primary), 0.04) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(var(--brand), 0.06) 0, transparent 50%);
+    filter: blur(100px);
+  }
+
+  .bg-radial-brand {
+    background: radial-gradient(ellipse at 50% 0%, hsla(var(--brand), 0.12) 0%, transparent 65%);
+  }
+
+  .bg-radial-center {
+    background: radial-gradient(ellipse at 50% 50%, hsla(var(--brand), 0.08) 0%, transparent 60%);
+  }
+
+  .text-brand {
+    color: hsl(var(--brand));
+  }
+
+  .border-brand {
+    border-color: hsl(var(--brand));
+  }
+
+  .bg-brand {
+    background-color: hsl(var(--brand));
+  }
+
+  .ring-brand {
+    box-shadow: 0 0 0 2px hsl(var(--brand));
+  }
+
+  .glow-brand {
+    box-shadow: 0 0 24px hsla(var(--brand), 0.3);
+  }
+
+  .text-glow-brand {
+    text-shadow: 0 0 30px hsla(var(--brand), 0.5);
+  }
+
+  .animate-glow-pulse {
+    animation: var(--animate-glow-pulse);
+  }
+
+  .animate-scanline {
+    animation: var(--animate-scanline);
+  }
+
+  .animate-shimmer {
+    animation: var(--animate-shimmer);
+  }
+
+  .bg-brand-gradient {
+    background: linear-gradient(135deg, hsla(var(--brand), 0.15) 0%, transparent 100%);
+  }
+
+  .forensic-frame {
+    position: relative;
+  }
+
+  .forensic-frame::before,
+  .forensic-frame::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: hsla(var(--brand), 0.5);
+    border-style: solid;
+  }
+
+  .forensic-frame::before {
+    top: 0;
+    left: 0;
+    border-width: 1px 0 0 1px;
+  }
+
+  .forensic-frame::after {
+    bottom: 0;
+    right: 0;
+    border-width: 0 1px 1px 0;
+  }
+
+  .shimmer-bg {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsla(var(--foreground), 0.04) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  .bg-terminal {
+    background-color: hsl(220, 15%, 4%);
+    background-image:
+      linear-gradient(hsla(var(--foreground), 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, hsla(var(--foreground), 0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 
   .text-glow {

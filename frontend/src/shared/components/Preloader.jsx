@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import gsap from 'gsap'
-
+import { AnimatePresence } from 'framer-motion'
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion'
 export default function Preloader({ onComplete }) {
   const [percent, setPercent] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
@@ -47,18 +47,19 @@ export default function Preloader({ onComplete }) {
              </motion.h1>
           </div>
           
-          <div className="w-[200px] h-px bg-foreground/5 relative overflow-hidden">
-            <motion.div 
+          <div className="w-[200px] h-px bg-foreground/8 relative overflow-hidden">
+            <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${percent}%` }}
-              className="absolute inset-y-0 left-0 bg-foreground"
+              className="absolute inset-y-0 left-0 bg-brand"
+              style={{ boxShadow: '0 0 8px hsla(186,90%,52%,0.6)' }}
             />
           </div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-4 text-[10px] font-mono text-foreground/40 tabular-nums"
+            className="mt-4 text-[10px] font-black tabular-nums tracking-widest text-brand"
           >
             {percent.toString().padStart(3, '0')}%
           </motion.div>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+
 import Navbar from '@/shared/components/Navbar'
 import { useAuth } from '@/app/providers/AuthContext'
 import { Button } from '@/shared/components/ui/button'
@@ -11,7 +11,7 @@ import {
 const SECTIONS = ['Profile', 'Security', 'Notifications', 'Billing', 'Danger Zone']
 
 export default function SettingsPage() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const [activeSection, setActiveSection] = useState('Profile')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -86,7 +86,7 @@ export default function SettingsPage() {
                   { label: 'Notifications', icon: Bell },
                   { label: 'Billing', icon: CreditCard },
                   { label: 'Danger Zone', icon: Trash2 },
-                ].map(({ label, icon: Icon }) => (
+                ].map(({ label, icon: Icon }) => ( // eslint-disable-line no-unused-vars
                   <button
                     key={label}
                     onClick={() => setActiveSection(label)}
