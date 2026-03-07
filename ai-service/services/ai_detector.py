@@ -1,7 +1,7 @@
 import io
 from PIL import Image
 import torch
-from transformers import ViTForImageClassification, ViTFeatureExtractor
+from transformers import ViTForImageClassification, ViTImageProcessor
 
 MODEL_NAME = "umm-maybe/AI-image-detector"
 _model = None
@@ -10,7 +10,7 @@ _feature_extractor = None
 def _load_model():
     global _model, _feature_extractor
     if _model is None:
-        _feature_extractor = ViTFeatureExtractor.from_pretrained(MODEL_NAME)
+        _feature_extractor = ViTImageProcessor.from_pretrained(MODEL_NAME)
         _model = ViTForImageClassification.from_pretrained(MODEL_NAME)
         _model.eval()
 
