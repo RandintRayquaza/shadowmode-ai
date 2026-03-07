@@ -60,7 +60,7 @@ export async function analyze(req, res, next) {
     (async () => {
       try {
         const python = await analyzeImageWithPython(imageBuffer, originalname);
-        const { ela_score = 0, ai_probability = 0, ai_label = "unknown", metadata = {}, flags = [], ela_heatmap_b64 = null } = python;
+        const { riskScore = 100, verdict = "Authentic", signals = {}, metadata = {}, flags = [], ela_heatmap_b64 = null, ai_label = "unknown" } = python;
 
         let elaUpload = { url: null, fileId: null };
         if (ela_heatmap_b64) {
@@ -71,16 +71,17 @@ export async function analyze(req, res, next) {
           }
         }
 
-        const { score, verdict } = calculateScore({ elaScore: ela_score, aiProbability: ai_probability, flags });
-        const explanation = await generateExplanation({ score, verdict, aiProbability: ai_probability, flags, metadata });
+        const explanation = await generateExplanation({ score: riskScore, verdict, aiProbability: (signals.aiProbability || 0)/100, flags, metadata });
 
         await updateAnalysis(docId, {
           elaUrl: elaUpload.url,
           elaFileId: elaUpload.fileId,
-          score, verdict,
-          aiProbability: ai_probability,
+          score: riskScore,
+          verdict,
+          aiProbability: (signals.aiProbability || 0)/100,
           aiLabel: ai_label,
-          elaScore: ela_score,
+          elaScore: signals.elaScore || 0,
+          signals,
           metadata, flags, explanation,
           status: "complete",
         });
