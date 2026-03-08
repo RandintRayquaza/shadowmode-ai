@@ -5,6 +5,7 @@ import { useAuthActions } from '../hooks/useAuthActions'
 import { useAuthStore } from '../state/useAuthStore'
 import { Button } from '@/shared/components/ui/button'
 import { Eye, EyeOff, ArrowRight, Loader2, Fingerprint, ScanSearch } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 export default function LoginPage() {
   const { login, loginWithGoogle } = useAuthActions()

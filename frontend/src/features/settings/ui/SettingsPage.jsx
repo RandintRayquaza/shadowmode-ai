@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 
 import Navbar from '@/shared/components/Navbar'
 import { useAuth } from '@/app/providers/AuthContext'
